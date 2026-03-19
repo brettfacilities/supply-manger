@@ -1,0 +1,977 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Supply Manager — School & Church</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap');
+
+:root {
+  --bg: #0f1117;
+  --bg2: #161820;
+  --bg3: #1e2028;
+  --bg4: #252830;
+  --border: #2e3140;
+  --border2: #3a3e52;
+  --text: #f0f1f5;
+  --text2: #9096b0;
+  --text3: #5a6080;
+  --accent: #4f8ef7;
+  --accent2: #3a6fd4;
+  --green: #3ecf72;
+  --green-bg: rgba(62,207,114,0.12);
+  --amber: #f5a623;
+  --amber-bg: rgba(245,166,35,0.12);
+  --red: #f25f5c;
+  --red-bg: rgba(242,95,92,0.12);
+  --purple: #a78bfa;
+  --purple-bg: rgba(167,139,250,0.12);
+  --teal: #2dd4bf;
+  --teal-bg: rgba(45,212,191,0.12);
+  --radius: 12px;
+  --radius-sm: 8px;
+  --radius-xs: 5px;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: 'Outfit', sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  min-height: 100vh;
+  font-size: 14px;
+}
+
+/* Scrollbar */
+::-webkit-scrollbar { width: 6px; height: 6px; }
+::-webkit-scrollbar-track { background: var(--bg2); }
+::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 99px; }
+
+/* Layout */
+.shell { display: flex; min-height: 100vh; }
+
+/* Sidebar */
+.sidebar {
+  width: 220px;
+  min-width: 220px;
+  background: var(--bg2);
+  border-right: 1px solid var(--border);
+  display: flex;
+  flex-direction: column;
+  position: sticky;
+  top: 0;
+  height: 100vh;
+  overflow-y: auto;
+}
+
+.sidebar-logo {
+  padding: 20px 18px 16px;
+  border-bottom: 1px solid var(--border);
+}
+.sidebar-logo .logo-mark {
+  width: 36px; height: 36px;
+  background: var(--accent);
+  border-radius: var(--radius-sm);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 18px; margin-bottom: 10px;
+}
+.sidebar-logo .app-name { font-size: 15px; font-weight: 700; color: var(--text); }
+.sidebar-logo .app-sub { font-size: 11px; color: var(--text3); margin-top: 2px; }
+
+.sidebar-section { padding: 12px 10px 4px; }
+.sidebar-section-label { font-size: 10px; font-weight: 600; color: var(--text3); text-transform: uppercase; letter-spacing: 0.08em; padding: 0 8px; margin-bottom: 4px; }
+
+.nav-item {
+  display: flex; align-items: center; gap: 9px;
+  padding: 8px 10px;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  font-size: 13px; font-weight: 500;
+  color: var(--text2);
+  transition: all 0.15s;
+  margin-bottom: 2px;
+}
+.nav-item:hover { background: var(--bg3); color: var(--text); }
+.nav-item.active { background: rgba(79,142,247,0.15); color: var(--accent); }
+.nav-item .nav-icon { width: 18px; text-align: center; font-size: 15px; flex-shrink: 0; }
+.nav-badge { margin-left: auto; background: var(--red-bg); color: var(--red); font-size: 10px; font-weight: 700; padding: 2px 6px; border-radius: 99px; }
+.nav-badge.amber { background: var(--amber-bg); color: var(--amber); }
+
+.sidebar-locations { padding: 4px 10px 12px; }
+.loc-nav-item {
+  display: flex; align-items: center; gap: 8px;
+  padding: 7px 10px;
+  border-radius: var(--radius-sm);
+  cursor: pointer;
+  font-size: 13px; font-weight: 400;
+  color: var(--text2);
+  transition: all 0.15s;
+  margin-bottom: 1px;
+}
+.loc-nav-item:hover { background: var(--bg3); color: var(--text); }
+.loc-nav-item.active { background: var(--bg3); color: var(--text); }
+.loc-dot { width: 8px; height: 8px; border-radius: 50%; flex-shrink: 0; }
+
+/* Main */
+.main { flex: 1; display: flex; flex-direction: column; overflow: hidden; }
+
+.topbar {
+  background: var(--bg2);
+  border-bottom: 1px solid var(--border);
+  padding: 14px 24px;
+  display: flex; align-items: center; gap: 12px;
+  flex-wrap: wrap;
+}
+.page-title { font-size: 17px; font-weight: 700; flex: 1; min-width: 120px; }
+.topbar-actions { display: flex; gap: 8px; align-items: center; }
+
+.content { padding: 24px; overflow-y: auto; flex: 1; }
+
+/* Buttons */
+.btn {
+  padding: 8px 16px;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--border2);
+  background: var(--bg3);
+  color: var(--text);
+  font-size: 13px; font-family: 'Outfit', sans-serif; font-weight: 500;
+  cursor: pointer; white-space: nowrap;
+  transition: all 0.15s;
+  display: inline-flex; align-items: center; gap: 6px;
+}
+.btn:hover { background: var(--bg4); border-color: var(--border2); }
+.btn-accent { background: var(--accent); color: #fff; border-color: var(--accent); }
+.btn-accent:hover { background: var(--accent2); border-color: var(--accent2); }
+.btn-green { background: var(--green-bg); color: var(--green); border-color: rgba(62,207,114,0.25); }
+.btn-green:hover { background: rgba(62,207,114,0.2); }
+.btn-red { background: var(--red-bg); color: var(--red); border-color: rgba(242,95,92,0.25); }
+.btn-red:hover { background: rgba(242,95,92,0.2); }
+.btn-amber { background: var(--amber-bg); color: var(--amber); border-color: rgba(245,166,35,0.25); }
+.btn-amber:hover { background: rgba(245,166,35,0.2); }
+.btn-sm { padding: 5px 10px; font-size: 12px; }
+.btn-xs { padding: 3px 8px; font-size: 11px; }
+
+/* Search */
+.search-wrap { position: relative; }
+.search-wrap input { padding-left: 32px; width: 200px; background: var(--bg3); border-color: var(--border); color: var(--text); }
+.search-wrap::before { content: '🔍'; position: absolute; left: 10px; top: 50%; transform: translateY(-50%); font-size: 12px; pointer-events: none; }
+
+/* Stats grid */
+.stats-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 12px; margin-bottom: 24px; }
+.stat-card {
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  padding: 16px 18px;
+  position: relative; overflow: hidden;
+}
+.stat-card::before { content: ''; position: absolute; top: 0; left: 0; right: 0; height: 2px; background: var(--accent); }
+.stat-card.green::before { background: var(--green); }
+.stat-card.amber::before { background: var(--amber); }
+.stat-card.red::before { background: var(--red); }
+.stat-card.purple::before { background: var(--purple); }
+.stat-label { font-size: 11px; font-weight: 500; color: var(--text3); text-transform: uppercase; letter-spacing: 0.06em; margin-bottom: 8px; }
+.stat-value { font-size: 28px; font-weight: 700; color: var(--text); font-family: 'JetBrains Mono', monospace; }
+.stat-value.green { color: var(--green); }
+.stat-value.amber { color: var(--amber); }
+.stat-value.red { color: var(--red); }
+.stat-sub { font-size: 11px; color: var(--text3); margin-top: 4px; }
+
+/* Alert */
+.alert-bar {
+  background: var(--amber-bg);
+  border: 1px solid rgba(245,166,35,0.3);
+  border-radius: var(--radius-sm);
+  padding: 10px 14px;
+  font-size: 13px; color: var(--amber);
+  margin-bottom: 20px; display: none;
+}
+
+/* Table */
+.tbl-card {
+  background: var(--bg2);
+  border: 1px solid var(--border);
+  border-radius: var(--radius);
+  overflow: hidden; overflow-x: auto;
+  margin-bottom: 20px;
+}
+table { width: 100%; border-collapse: collapse; min-width: 560px; }
+thead tr { border-bottom: 1px solid var(--border); }
+th {
+  padding: 11px 14px;
+  font-size: 11px; font-weight: 600; color: var(--text3);
+  text-transform: uppercase; letter-spacing: 0.06em;
+  text-align: left; white-space: nowrap;
+  background: var(--bg3);
+}
+td { padding: 11px 14px; border-bottom: 1px solid var(--border); vertical-align: middle; }
+tr:last-child td { border-bottom: none; }
+tr:hover td { background: rgba(255,255,255,0.02); }
+.pname { font-weight: 600; font-size: 13px; }
+.pnote { font-size: 11px; color: var(--text3); margin-top: 2px; }
+
+/* Badges */
+.badge { display: inline-flex; align-items: center; gap: 4px; font-size: 11px; font-weight: 600; padding: 3px 8px; border-radius: 99px; }
+.badge-ok { background: var(--green-bg); color: var(--green); }
+.badge-low { background: var(--amber-bg); color: var(--amber); }
+.badge-out { background: var(--red-bg); color: var(--red); }
+.badge-order { background: var(--amber-bg); color: var(--amber); }
+.badge-stocked { background: var(--green-bg); color: var(--green); }
+
+/* Cat pill */
+.cat-pill { display: inline-block; font-size: 11px; font-weight: 500; padding: 2px 8px; border-radius: 99px; white-space: nowrap; }
+
+/* Qty ctrl */
+.qty-ctrl { display: flex; align-items: center; gap: 6px; }
+.qty-btn {
+  width: 26px; height: 26px; border-radius: var(--radius-xs);
+  border: 1px solid var(--border2); background: var(--bg3);
+  cursor: pointer; color: var(--text2); font-size: 16px;
+  display: flex; align-items: center; justify-content: center;
+  transition: all 0.12s; font-family: 'Outfit', sans-serif;
+}
+.qty-btn:hover { background: var(--bg4); color: var(--text); }
+.qty-num { font-weight: 700; min-width: 32px; text-align: center; font-family: 'JetBrains Mono', monospace; font-size: 14px; }
+
+/* Row actions */
+.row-acts { display: flex; gap: 5px; }
+
+/* Modals */
+.overlay { display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.6); z-index: 300; align-items: center; justify-content: center; padding: 16px; backdrop-filter: blur(4px); }
+.overlay.open { display: flex; }
+.modal {
+  background: var(--bg2);
+  border: 1px solid var(--border2);
+  border-radius: var(--radius);
+  padding: 28px;
+  width: 100%; max-width: 480px;
+  max-height: 90vh; overflow-y: auto;
+  box-shadow: 0 24px 64px rgba(0,0,0,0.5);
+}
+.modal h2 { font-size: 18px; font-weight: 700; margin-bottom: 20px; }
+.field { margin-bottom: 14px; }
+.field label { display: block; font-size: 12px; font-weight: 500; color: var(--text2); margin-bottom: 5px; }
+.grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.modal-actions { display: flex; gap: 8px; justify-content: flex-end; margin-top: 24px; border-top: 1px solid var(--border); padding-top: 20px; }
+
+/* Inputs */
+input, select, textarea {
+  font-family: 'Outfit', sans-serif; font-size: 13px;
+  padding: 9px 12px;
+  border: 1px solid var(--border2);
+  border-radius: var(--radius-sm);
+  background: var(--bg3); color: var(--text);
+  width: 100%; outline: none;
+  transition: border-color 0.15s;
+}
+input:focus, select:focus, textarea:focus { border-color: var(--accent); }
+select option { background: var(--bg3); }
+textarea { height: 64px; resize: vertical; line-height: 1.5; }
+
+/* Info box */
+.info-box { background: rgba(79,142,247,0.1); border: 1px solid rgba(79,142,247,0.25); border-radius: var(--radius-sm); padding: 10px 14px; font-size: 12px; color: var(--accent); margin-bottom: 16px; }
+
+/* Reorder cards */
+.section-label { font-size: 11px; font-weight: 700; color: var(--text3); text-transform: uppercase; letter-spacing: 0.07em; margin: 24px 0 10px; padding-bottom: 8px; border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: 8px; }
+.section-count { background: var(--bg3); border: 1px solid var(--border); border-radius: 99px; padding: 1px 7px; font-size: 10px; }
+
+.ro-card {
+  background: var(--bg2); border: 1px solid var(--border);
+  border-radius: var(--radius); padding: 18px 20px; margin-bottom: 10px;
+  transition: border-color 0.15s;
+}
+.ro-card.urgent { border-left: 3px solid var(--red); }
+.ro-card.soon { border-left: 3px solid var(--amber); }
+.ro-card:hover { border-color: var(--border2); }
+.ro-head { display: flex; align-items: center; gap: 10px; margin-bottom: 14px; flex-wrap: wrap; }
+.ro-name { font-weight: 700; font-size: 15px; flex: 1; }
+.ro-stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(95px, 1fr)); gap: 8px; }
+.ro-stat { background: var(--bg3); border-radius: var(--radius-sm); padding: 8px 12px; }
+.ro-stat-label { font-size: 10px; font-weight: 600; color: var(--text3); text-transform: uppercase; letter-spacing: 0.04em; margin-bottom: 3px; }
+.ro-stat-val { font-size: 16px; font-weight: 700; color: var(--text); font-family: 'JetBrains Mono', monospace; }
+.ro-stat-val.red { color: var(--red); }
+.ro-stat-val.amber { color: var(--amber); }
+.ro-stat-val.green { color: var(--green); }
+.prog-wrap { margin-top: 14px; }
+.prog-bg { height: 5px; background: var(--bg3); border-radius: 99px; overflow: hidden; }
+.prog-fill { height: 100%; border-radius: 99px; transition: width 0.5s; }
+.prog-labels { display: flex; justify-content: space-between; font-size: 11px; color: var(--text3); margin-top: 5px; }
+
+/* Analytics */
+.analytics-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 16px; margin-bottom: 20px; }
+.chart-card { background: var(--bg2); border: 1px solid var(--border); border-radius: var(--radius); padding: 20px; }
+.chart-title { font-size: 13px; font-weight: 600; color: var(--text2); margin-bottom: 16px; }
+.bar-chart { display: flex; flex-direction: column; gap: 10px; }
+.bar-row { display: flex; align-items: center; gap: 10px; }
+.bar-label { font-size: 12px; color: var(--text2); width: 110px; flex-shrink: 0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.bar-track { flex: 1; height: 8px; background: var(--bg3); border-radius: 99px; overflow: hidden; }
+.bar-fill { height: 100%; border-radius: 99px; background: var(--accent); }
+.bar-val { font-size: 12px; font-family: 'JetBrains Mono', monospace; color: var(--text3); width: 28px; text-align: right; }
+
+/* Log */
+.log-list { background: var(--bg2); border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden; }
+.log-item { display: flex; gap: 12px; padding: 10px 16px; border-bottom: 1px solid var(--border); font-size: 13px; align-items: flex-start; }
+.log-item:last-child { border-bottom: none; }
+.log-time { font-family: 'JetBrains Mono', monospace; font-size: 11px; color: var(--text3); white-space: nowrap; padding-top: 1px; min-width: 80px; }
+.log-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--accent); margin-top: 5px; flex-shrink: 0; }
+.log-dot.green { background: var(--green); }
+.log-dot.amber { background: var(--amber); }
+.log-dot.red { background: var(--red); }
+.log-txt { color: var(--text); flex: 1; line-height: 1.4; }
+
+/* Empty */
+.empty { text-align: center; padding: 48px; color: var(--text3); }
+.empty-icon { font-size: 32px; margin-bottom: 8px; }
+.empty-text { font-size: 14px; }
+
+/* Connex highlight */
+.connex-cell { background: rgba(79,142,247,0.06); }
+.connex-num { color: var(--accent); font-family: 'JetBrains Mono', monospace; font-weight: 700; }
+
+/* Footnote */
+.footnote { font-size: 11px; color: var(--text3); margin-top: -14px; margin-bottom: 16px; }
+
+/* Loc colors */
+.loc-0 { background: #4f8ef7; }
+.loc-1 { background: #3ecf72; }
+.loc-2 { background: #f5a623; }
+.loc-3 { background: #a78bfa; }
+.loc-4 { background: #2dd4bf; }
+
+@media (max-width: 768px) {
+  .sidebar { display: none; }
+  .content { padding: 16px; }
+  .topbar { padding: 12px 16px; }
+}
+@media print {
+  .sidebar, .topbar-actions, .row-acts, .qty-btn { display: none !important; }
+  body { background: white; color: black; }
+}
+</style>
+</head>
+<body>
+<div class="shell">
+
+  <!-- Sidebar -->
+  <nav class="sidebar" id="sidebar">
+    <div class="sidebar-logo">
+      <div class="logo-mark">🧹</div>
+      <div class="app-name">SupplyOps</div>
+      <div class="app-sub">School &amp; Church</div>
+    </div>
+
+    <div class="sidebar-section">
+      <div class="sidebar-section-label">Overview</div>
+      <div class="nav-item active" onclick="setView('dashboard')" id="nav-dashboard">
+        <span class="nav-icon">◈</span> Dashboard
+      </div>
+      <div class="nav-item" onclick="setView('reorder')" id="nav-reorder">
+        <span class="nav-icon">↻</span> Reorder
+        <span class="nav-badge amber" id="reorder-badge">0</span>
+      </div>
+      <div class="nav-item" onclick="setView('analytics')" id="nav-analytics">
+        <span class="nav-icon">▦</span> Analytics
+      </div>
+      <div class="nav-item" onclick="setView('activity')" id="nav-activity">
+        <span class="nav-icon">≡</span> Activity log
+      </div>
+    </div>
+
+    <div class="sidebar-section">
+      <div class="sidebar-section-label">Locations</div>
+    </div>
+    <div class="sidebar-locations" id="loc-nav"></div>
+  </nav>
+
+  <!-- Main -->
+  <div class="main">
+    <div class="topbar">
+      <div class="page-title" id="page-title">Dashboard</div>
+      <div class="topbar-actions">
+        <div class="search-wrap"><input type="text" id="search" placeholder="Search..." oninput="render()"></div>
+        <button class="btn btn-amber" onclick="openTransfer()">⇄ Transfer</button>
+        <button class="btn btn-green" onclick="openLogUsage()">+ Log usage</button>
+        <button class="btn btn-accent" onclick="openAdd()">+ Add item</button>
+      </div>
+    </div>
+
+    <div class="content">
+      <div class="alert-bar" id="alert-bar"></div>
+      <div id="stats-row"></div>
+      <div id="main-content"></div>
+    </div>
+  </div>
+</div>
+
+<!-- Add/Edit modal -->
+<div class="overlay" id="modal-item">
+  <div class="modal">
+    <h2 id="item-modal-title">Add supply item</h2>
+    <div class="field"><label>Product name</label><input type="text" id="f-name" placeholder="e.g. Paper Towel Rolls"></div>
+    <div class="grid2">
+      <div class="field"><label>Category</label>
+        <select id="f-cat">
+          <option>Paper &amp; Dispensers</option>
+          <option>Trash &amp; Liners</option>
+          <option>Mops &amp; Brooms</option>
+          <option>Protective Equipment</option>
+          <option>Disinfectants</option>
+          <option>Air Filters</option>
+          <option>Hand Soap</option>
+          <option>Cleaning Chemicals</option>
+          <option>Other</option>
+        </select>
+      </div>
+      <div class="field"><label>Unit</label>
+        <select id="f-unit">
+          <option>Cases</option><option>Bottles</option><option>Gallons</option>
+          <option>Rolls</option><option>Boxes</option><option>Bags</option>
+          <option>Units</option><option>Pairs</option><option>Pumps</option><option>Filters</option>
+        </select>
+      </div>
+    </div>
+    <div class="grid2">
+      <div class="field"><label>Qty in Connex</label><input type="number" id="f-qty" min="0" placeholder="0"></div>
+      <div class="field"><label>Safety buffer</label><input type="number" id="f-thresh" min="0" placeholder="5"></div>
+    </div>
+    <div class="field"><label>Est. monthly usage (all areas)</label><input type="number" id="f-monthly" min="0" placeholder="e.g. 20"></div>
+    <div class="field"><label>Supplier</label><input type="text" id="f-supplier" placeholder="Supplier name"></div>
+    <div class="field"><label>Notes</label><textarea id="f-notes" placeholder="Size, brand, storage location..."></textarea></div>
+    <div class="modal-actions">
+      <button class="btn" onclick="closeModals()">Cancel</button>
+      <button class="btn btn-accent" onclick="saveItem()">Save item</button>
+    </div>
+  </div>
+</div>
+
+<!-- Transfer modal -->
+<div class="overlay" id="modal-transfer">
+  <div class="modal">
+    <h2>Transfer stock</h2>
+    <div class="info-box">Move stock from Connex to any area, or between areas.</div>
+    <div class="field"><label>Product</label><select id="t-prod" onchange="updateTMax()"></select></div>
+    <div class="grid2">
+      <div class="field"><label>From</label><select id="t-from" onchange="updateTMax()"></select></div>
+      <div class="field"><label>To</label><select id="t-to"></select></div>
+    </div>
+    <div class="field"><label>Quantity <span id="t-avail" style="color:var(--text3);font-weight:400"></span></label>
+      <input type="number" id="t-qty" min="1" placeholder="0">
+    </div>
+    <div class="modal-actions">
+      <button class="btn" onclick="closeModals()">Cancel</button>
+      <button class="btn btn-accent" onclick="doTransfer()">Transfer</button>
+    </div>
+  </div>
+</div>
+
+<!-- Log usage modal -->
+<div class="overlay" id="modal-usage">
+  <div class="modal">
+    <h2>Log usage</h2>
+    <div class="info-box">Record actual consumption. Feeds the 30-day reorder engine.</div>
+    <div class="field"><label>Product</label><select id="u-prod"></select></div>
+    <div class="field"><label>Area</label><select id="u-loc"></select></div>
+    <div class="field"><label>Quantity consumed</label><input type="number" id="u-qty" min="1" placeholder="0"></div>
+    <div class="field"><label>Date</label><input type="date" id="u-date"></div>
+    <div class="field"><label>Notes (optional)</label><input type="text" id="u-note" placeholder="e.g. deep clean, event, spill..."></div>
+    <div class="modal-actions">
+      <button class="btn" onclick="closeModals()">Cancel</button>
+      <button class="btn btn-accent" onclick="saveUsage()">Log usage</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ── Config ──────────────────────────────────────────────────────
+const LOCS = ['Connex', 'Worship Center', 'Gym', 'Chapel', 'Breezeway'];
+const LOC_COLORS = ['#4f8ef7','#3ecf72','#f5a623','#a78bfa','#2dd4bf'];
+
+const CAT = {
+  'Paper & Dispensers':   {bg:'rgba(167,139,250,0.15)', color:'#a78bfa'},
+  'Trash & Liners':       {bg:'rgba(90,96,128,0.25)',   color:'#9096b0'},
+  'Mops & Brooms':        {bg:'rgba(79,142,247,0.15)',  color:'#4f8ef7'},
+  'Protective Equipment': {bg:'rgba(242,95,92,0.15)',   color:'#f25f5c'},
+  'Disinfectants':        {bg:'rgba(62,207,114,0.15)',  color:'#3ecf72'},
+  'Air Filters':          {bg:'rgba(45,212,191,0.15)',  color:'#2dd4bf'},
+  'Hand Soap':            {bg:'rgba(245,166,35,0.15)',  color:'#f5a623'},
+  'Cleaning Chemicals':   {bg:'rgba(62,207,114,0.12)',  color:'#3ecf72'},
+  'Other':                {bg:'rgba(90,96,128,0.2)',    color:'#9096b0'},
+};
+
+// ── State ───────────────────────────────────────────────────────
+function loadState() {
+  try { const s = localStorage.getItem('supplyops_v1'); if(s) return JSON.parse(s); } catch(e){}
+  return {
+    products: [
+      {id:1, name:'Paper Towel Rolls',       category:'Paper & Dispensers',   unit:'Cases',   thresh:3, monthlyEst:8,  supplier:'OfficeSupply Co', notes:'2-ply, white'},
+      {id:2, name:'Toilet Paper',            category:'Paper & Dispensers',   unit:'Cases',   thresh:4, monthlyEst:12, supplier:'OfficeSupply Co', notes:'96 rolls/case'},
+      {id:3, name:'Trash Liners 33gal',      category:'Trash & Liners',       unit:'Boxes',   thresh:3, monthlyEst:10, supplier:'LinersPlus',      notes:'Medium duty'},
+      {id:4, name:'Trash Liners 55gal',      category:'Trash & Liners',       unit:'Boxes',   thresh:3, monthlyEst:8,  supplier:'LinersPlus',      notes:'Heavy duty, black'},
+      {id:5, name:'Cotton Mop Heads',        category:'Mops & Brooms',        unit:'Units',   thresh:3, monthlyEst:5,  supplier:'JanitorDirect',   notes:'Fits #54 handle'},
+      {id:6, name:'Push Broom 24"',          category:'Mops & Brooms',        unit:'Units',   thresh:2, monthlyEst:2,  supplier:'JanitorDirect',   notes:''},
+      {id:7, name:'Latex Gloves (M)',        category:'Protective Equipment', unit:'Boxes',   thresh:4, monthlyEst:6,  supplier:'SafeGuard',       notes:'100 pairs/box'},
+      {id:8, name:'Disinfectant Spray',      category:'Disinfectants',        unit:'Bottles', thresh:8, monthlyEst:20, supplier:'SafeGuard',       notes:'EPA-approved'},
+      {id:9, name:'Disinfecting Wipes',      category:'Disinfectants',        unit:'Cases',   thresh:4, monthlyEst:10, supplier:'SafeGuard',       notes:''},
+      {id:10,name:'HVAC Air Filter 16x25',   category:'Air Filters',          unit:'Filters', thresh:4, monthlyEst:4,  supplier:'FilterPro',       notes:'Change monthly'},
+      {id:11,name:'HVAC Air Filter 20x20',   category:'Air Filters',          unit:'Filters', thresh:4, monthlyEst:4,  supplier:'FilterPro',       notes:'Change monthly'},
+      {id:12,name:'Hand Soap (foam)',        category:'Hand Soap',            unit:'Bottles', thresh:6, monthlyEst:16, supplier:'CleanCo',         notes:'Refill dispensers'},
+      {id:13,name:'Hand Sanitizer',          category:'Hand Soap',            unit:'Bottles', thresh:6, monthlyEst:14, supplier:'CleanCo',         notes:'70% alcohol'},
+      {id:14,name:'Floor Cleaner',           category:'Cleaning Chemicals',   unit:'Gallons', thresh:4, monthlyEst:10, supplier:'CleanCo',         notes:'Dilute 1:10'},
+    ],
+    stock: {
+      1:[12,2,2,1,1], 2:[16,3,2,3,2], 3:[14,2,3,2,1], 4:[10,2,1,2,1],
+      5:[8,2,1,2,0],  6:[4,1,1,1,1],  7:[12,2,2,2,1], 8:[18,3,2,3,1],
+      9:[10,2,1,2,1], 10:[12,3,3,2,2],11:[10,2,2,2,2],12:[14,3,2,2,2],
+      13:[12,3,2,2,1],14:[8,2,1,2,1],
+    },
+    usageLog: [],
+    actLog: [],
+    nextId: 15,
+  };
+}
+
+let S = loadState();
+let {products, stock, usageLog, actLog} = S;
+let nextId = S.nextId || 15;
+let currentView = 'dashboard';
+let currentLoc = -1; // -1 = overview
+let editId = null;
+
+function save() {
+  S = {products, stock, usageLog, actLog, nextId};
+  try { localStorage.setItem('supplyops_v1', JSON.stringify(S)); } catch(e){}
+}
+
+// ── Helpers ─────────────────────────────────────────────────────
+function ls(pid, i)   { return (stock[pid]||[])[i]||0; }
+function ts(pid)      { return (stock[pid]||[]).reduce((a,b)=>a+b,0); }
+function st(q,t)      { return q===0?'out':q<=t?'low':'ok'; }
+function cp(cat)      { const c=CAT[cat]||CAT['Other']; return `<span class="cat-pill" style="background:${c.bg};color:${c.color}">${cat}</span>`; }
+function dAgo(n)      { const d=new Date(); d.setDate(d.getDate()-n); return d.toISOString().slice(0,10); }
+
+function u30(pid) {
+  const cut=new Date(); cut.setDate(cut.getDate()-30);
+  return usageLog.filter(e=>e.pid===pid&&new Date(e.date)>=cut).reduce((s,e)=>s+e.qty,0);
+}
+function rqty(p) {
+  const u=u30(p.id), m=u>0?u:(p.monthlyEst||0), t=ts(p.id);
+  return Math.max(0, Math.ceil(m+p.thresh-t));
+}
+function dos(p) {
+  const u=u30(p.id); if(!u) return null;
+  return Math.round(ts(p.id)/(u/30));
+}
+
+function logAct(msg, type='info') {
+  const now=new Date();
+  actLog.unshift({
+    time: now.toLocaleDateString([],{month:'short',day:'numeric'})+' '+now.toLocaleTimeString([],{hour:'2-digit',minute:'2-digit'}),
+    text: msg, type
+  });
+  if(actLog.length>80) actLog.pop();
+  save();
+}
+
+// ── Sidebar nav ─────────────────────────────────────────────────
+function buildSidebar() {
+  // Loc nav
+  const locNav = document.getElementById('loc-nav');
+  locNav.innerHTML = `<div class="loc-nav-item ${currentLoc===-1&&currentView==='dashboard'?'active':''}" onclick="goLoc(-1)">
+    <span class="loc-dot" style="background:#4f8ef7"></span> All areas
+  </div>` + LOCS.map((l,i) =>
+    `<div class="loc-nav-item ${currentLoc===i&&currentView==='location'?'active':''}" onclick="goLoc(${i})">
+      <span class="loc-dot ${i===0?'loc-0':''}" style="background:${LOC_COLORS[i]}"></span> ${l}
+    </div>`
+  ).join('');
+
+  // Reorder badge
+  const need = products.filter(p=>rqty(p)>0).length;
+  const rb = document.getElementById('reorder-badge');
+  rb.textContent = need;
+  rb.style.display = need > 0 ? '' : 'none';
+
+  // Active nav items
+  ['dashboard','reorder','analytics','activity'].forEach(v => {
+    const el = document.getElementById('nav-'+v);
+    if(el) el.classList.toggle('active', currentView===v && currentLoc===-1);
+  });
+}
+
+function setView(v) { currentView=v; currentLoc=-1; render(); }
+function goLoc(i)   { currentLoc=i; currentView= i===-1?'dashboard':'location'; render(); }
+
+// ── Main render ─────────────────────────────────────────────────
+function render() {
+  buildSidebar();
+  const q = (document.getElementById('search').value||'').toLowerCase();
+  const filt = products.filter(p => !q || p.name.toLowerCase().includes(q) || p.category.toLowerCase().includes(q) || (p.supplier||'').toLowerCase().includes(q));
+  const mc = document.getElementById('main-content');
+  const sr = document.getElementById('stats-row');
+  const ab = document.getElementById('alert-bar');
+  const pt = document.getElementById('page-title');
+  ab.style.display = 'none';
+
+  if (currentView === 'activity') {
+    pt.textContent = 'Activity log';
+    sr.innerHTML = '';
+    mc.innerHTML = actLog.length === 0
+      ? `<div class="empty"><div class="empty-icon">📋</div><div class="empty-text">No activity yet. Stock changes will appear here.</div></div>`
+      : `<div class="log-list">${actLog.map(e=>`<div class="log-item"><span class="log-time">${e.time}</span><span class="log-dot ${e.type||''}"></span><span class="log-txt">${e.text}</span></div>`).join('')}</div>`;
+    return;
+  }
+
+  if (currentView === 'analytics') {
+    pt.textContent = 'Analytics';
+    sr.innerHTML = '';
+    renderAnalytics(mc, filt);
+    return;
+  }
+
+  if (currentView === 'reorder') {
+    pt.textContent = 'Reorder — 30-day cycle';
+    ab.style.display = 'none';
+    const urgent = products.filter(p=>rqty(p)>0&&(dos(p)||99)<7);
+    const soon   = products.filter(p=>rqty(p)>0&&(dos(p)||99)>=7&&(dos(p)||99)<20);
+    const ok     = products.filter(p=>rqty(p)===0);
+    sr.innerHTML = `<div class="stats-grid">
+      <div class="stat-card red"><div class="stat-label">Order now</div><div class="stat-value red">${urgent.length}</div><div class="stat-sub">critically low</div></div>
+      <div class="stat-card amber"><div class="stat-label">Order soon</div><div class="stat-value amber">${soon.length}</div><div class="stat-sub">within 20 days</div></div>
+      <div class="stat-card green"><div class="stat-label">Fully stocked</div><div class="stat-value green">${ok.length}</div><div class="stat-sub">products</div></div>
+      <div class="stat-card"><div class="stat-label">30-day cycle</div><div class="stat-value">${products.length}</div><div class="stat-sub">total products</div></div>
+    </div>`;
+    const cards = (list, lbl, cls) => {
+      const f = list.filter(p=>!q||p.name.toLowerCase().includes(q));
+      if(!f.length) return '';
+      return `<div class="section-label">${lbl} <span class="section-count">${f.length}</span></div>` +
+        f.map(p => {
+          const u=u30(p.id), m=u>0?u:(p.monthlyEst||0), t=ts(p.id), d=dos(p), rq=rqty(p);
+          const pct=d!=null?Math.min(100,Math.round((d/30)*100)):Math.min(100,Math.round((t/Math.max(m+p.thresh,1))*100));
+          const bc=pct<25?'#f25f5c':pct<60?'#f5a623':'#3ecf72';
+          return `<div class="ro-card ${cls}">
+            <div class="ro-head"><span class="ro-name">${p.name}</span>${cp(p.category)}${p.supplier?`<span style="font-size:11px;color:var(--text3)">${p.supplier}</span>`:''}</div>
+            <div class="ro-stats">
+              <div class="ro-stat"><div class="ro-stat-label">30d usage</div><div class="ro-stat-val">${u>0?u:(p.monthlyEst||0)+(u===0?'*':'')} ${p.unit}</div></div>
+              <div class="ro-stat"><div class="ro-stat-label">On hand</div><div class="ro-stat-val ${t===0?'red':t<=p.thresh?'amber':''}">${t} ${p.unit}</div></div>
+              <div class="ro-stat"><div class="ro-stat-label">Buffer</div><div class="ro-stat-val">${p.thresh} ${p.unit}</div></div>
+              <div class="ro-stat"><div class="ro-stat-label">Order qty</div><div class="ro-stat-val amber">${rq} ${p.unit}</div></div>
+              ${d!=null?`<div class="ro-stat"><div class="ro-stat-label">Days left</div><div class="ro-stat-val ${d<7?'red':d<20?'amber':'green'}">${d}d</div></div>`:''}
+            </div>
+            <div class="prog-wrap"><div class="prog-bg"><div class="prog-fill" style="width:${pct}%;background:${bc}"></div></div>
+            <div class="prog-labels"><span>${pct}% of 30-day supply</span><span style="font-weight:600;color:var(--amber)">Order ${rq} ${p.unit}</span></div></div>
+          </div>`;
+        }).join('');
+    };
+    mc.innerHTML = cards(urgent,'Order now — critically low','urgent')+cards(soon,'Order soon — within 20 days','soon')+cards(ok,'Fully stocked','')+`<p class="footnote" style="margin-top:8px">* Estimated — log actual usage for accuracy</p>`;
+    return;
+  }
+
+  if (currentView === 'location' && currentLoc >= 0) {
+    const li = currentLoc;
+    const ln = LOCS[li];
+    pt.textContent = ln;
+    const low = products.filter(p=>{const q=ls(p.id,li);return q>0&&q<=p.thresh;});
+    const out = products.filter(p=>ls(p.id,li)===0);
+    if(out.length||low.length) {
+      ab.style.display='block';
+      ab.textContent=(out.length?'Out of stock: '+out.map(p=>p.name).join(', '):'')+(out.length&&low.length?' · ':'')+(low.length?'Low stock: '+low.map(p=>p.name).join(', '):'');
+    }
+    const tot = products.reduce((s,p)=>s+ls(p.id,li),0);
+    sr.innerHTML=`<div class="stats-grid">
+      <div class="stat-card"><div class="stat-label">Products</div><div class="stat-value">${products.length}</div></div>
+      <div class="stat-card"><div class="stat-label">Total units</div><div class="stat-value">${tot}</div></div>
+      <div class="stat-card amber"><div class="stat-label">Low stock</div><div class="stat-value amber">${low.length}</div></div>
+      <div class="stat-card red"><div class="stat-label">Out of stock</div><div class="stat-value red">${out.length}</div></div>
+    </div>`;
+    let html=`<div class="tbl-card"><table><thead><tr>
+      <th>Product</th><th>Category</th><th>Unit</th>
+      <th>Qty at ${ln}</th><th>In Connex</th><th>30d usage</th><th>Status</th><th></th>
+    </tr></thead><tbody>`;
+    if(!filt.length) html+=`<tr><td colspan="8"><div class="empty"><div class="empty-text">No products found</div></div></td></tr>`;
+    filt.forEach(p=>{
+      const qty=ls(p.id,li), cx=ls(p.id,0), s=st(qty,p.thresh), u=u30(p.id);
+      const bc=s==='ok'?'badge-ok':s==='low'?'badge-low':'badge-out', bt=s==='ok'?'In stock':s==='low'?'Low stock':'Out of stock';
+      html+=`<tr>
+        <td><div class="pname">${p.name}</div>${p.notes?`<div class="pnote">${p.notes}</div>`:''}</td>
+        <td>${cp(p.category)}</td>
+        <td style="color:var(--text3);font-family:'JetBrains Mono',monospace;font-size:12px">${p.unit}</td>
+        <td><div class="qty-ctrl">
+          <button class="qty-btn" onclick="adj(${p.id},${li},-1)">−</button>
+          <span class="qty-num">${qty}</span>
+          <button class="qty-btn" onclick="adj(${p.id},${li},1)">+</button>
+        </div></td>
+        <td style="font-family:'JetBrains Mono',monospace;font-weight:700;color:${cx===0?'var(--red)':'var(--text3)'}">${cx}</td>
+        <td style="color:var(--text3);font-family:'JetBrains Mono',monospace;font-size:12px">${u>0?u+' '+p.unit:(p.monthlyEst||0)+'* (est)'}</td>
+        <td><span class="badge ${bc}">${bt}</span></td>
+        <td><button class="btn btn-xs" style="color:var(--accent);border-color:rgba(79,142,247,0.3)" onclick="qTransfer(${p.id},${li})">Pull from Connex</button></td>
+      </tr>`;
+    });
+    html+='</tbody></table></div>';
+    mc.innerHTML=html;
+    return;
+  }
+
+  // Dashboard / Connex view
+  pt.textContent = currentLoc===0 ? 'Connex' : 'Dashboard — All Areas';
+  const li = 0;
+  const low = products.filter(p=>{const q=ls(p.id,0);return q>0&&q<=p.thresh;});
+  const out = products.filter(p=>ls(p.id,0)===0);
+  if(out.length||low.length){
+    ab.style.display='block';
+    ab.textContent=(out.length?'Connex out of stock: '+out.map(p=>p.name).join(', '):'')+(out.length&&low.length?' · ':'')+(low.length?'Low in Connex: '+low.map(p=>p.name).join(', '):'');
+  }
+  const grandTotal = products.reduce((s,p)=>s+ts(p.id),0);
+  const needOrder = products.filter(p=>rqty(p)>0).length;
+  sr.innerHTML=`<div class="stats-grid">
+    <div class="stat-card"><div class="stat-label">Total products</div><div class="stat-value">${products.length}</div><div class="stat-sub">across all areas</div></div>
+    <div class="stat-card"><div class="stat-label">Total units</div><div class="stat-value">${grandTotal}</div><div class="stat-sub">in all locations</div></div>
+    <div class="stat-card amber"><div class="stat-label">Need reorder</div><div class="stat-value amber">${needOrder}</div><div class="stat-sub">products this cycle</div></div>
+    <div class="stat-card red"><div class="stat-label">Out in Connex</div><div class="stat-value red">${out.length}</div><div class="stat-sub">need restocking</div></div>
+  </div>`;
+
+  let html=`<div class="tbl-card"><table><thead><tr>
+    <th>Product</th><th>Category</th><th>Unit</th>
+    <th style="color:var(--accent)">Connex</th>
+    <th>Worship Ctr</th><th>Gym</th><th>Chapel</th><th>Breezeway</th>
+    <th>Total</th><th>30d usage</th><th>Order qty</th><th></th>
+  </tr></thead><tbody>`;
+  if(!filt.length) html+=`<tr><td colspan="12"><div class="empty"><div class="empty-text">No products found</div></div></td></tr>`;
+  filt.forEach(p=>{
+    const stocks=LOCS.map((_,i)=>ls(p.id,i)), tot=stocks.reduce((a,b)=>a+b,0), u=u30(p.id), rq=rqty(p);
+    html+=`<tr>
+      <td><div class="pname">${p.name}</div>${p.notes?`<div class="pnote">${p.notes}</div>`:''}</td>
+      <td>${cp(p.category)}</td>
+      <td style="color:var(--text3);font-family:'JetBrains Mono',monospace;font-size:12px">${p.unit}</td>
+      <td class="connex-cell"><div class="qty-ctrl">
+        <button class="qty-btn" onclick="adj(${p.id},0,-1)">−</button>
+        <span class="qty-num connex-num">${stocks[0]}</span>
+        <button class="qty-btn" onclick="adj(${p.id},0,1)">+</button>
+      </div></td>
+      ${[1,2,3,4].map(i=>`<td style="font-family:'JetBrains Mono',monospace;font-weight:700">${stocks[i]}</td>`).join('')}
+      <td style="font-family:'JetBrains Mono',monospace;font-weight:700">${tot}</td>
+      <td style="font-family:'JetBrains Mono',monospace;color:var(--text3);font-size:12px">${u>0?u:(p.monthlyEst||0)+'*'}</td>
+      <td><span class="badge ${rq>0?'badge-order':'badge-stocked'}">${rq>0?rq+' '+p.unit:'Stocked'}</span></td>
+      <td><div class="row-acts">
+        <button class="btn btn-xs" onclick="editItem(${p.id})">Edit</button>
+        <button class="btn btn-xs btn-red" onclick="delItem(${p.id})">Del</button>
+      </div></td>
+    </tr>`;
+  });
+  html+=`</tbody></table></div><p class="footnote">* Estimated usage — log actual usage to improve reorder accuracy</p>`;
+  mc.innerHTML=html;
+}
+
+function renderAnalytics(mc, filt) {
+  // Top used products (30 days)
+  const topUsed = [...products].map(p=>({p, u:u30(p.id)})).filter(x=>x.u>0).sort((a,b)=>b.u-a.u).slice(0,8);
+  const maxU = topUsed.length ? topUsed[0].u : 1;
+
+  // Usage by location
+  const locUsage = LOCS.slice(1).map((l,i) => {
+    const cut=new Date(); cut.setDate(cut.getDate()-30);
+    const u=usageLog.filter(e=>e.locIdx===i+1&&new Date(e.date)>=cut).reduce((s,e)=>s+e.qty,0);
+    return {l, u, color:LOC_COLORS[i+1]};
+  });
+  const maxLU = Math.max(...locUsage.map(x=>x.u), 1);
+
+  // Category breakdown
+  const catUsage = {};
+  usageLog.forEach(e=>{
+    const p=products.find(x=>x.id===e.pid); if(!p) return;
+    const cut=new Date(); cut.setDate(cut.getDate()-30);
+    if(new Date(e.date)<cut) return;
+    catUsage[p.category]=(catUsage[p.category]||0)+e.qty;
+  });
+  const catList = Object.entries(catUsage).sort((a,b)=>b[1]-a[1]).slice(0,6);
+  const maxCU = catList.length ? catList[0][1] : 1;
+
+  // Stock health
+  const totalProducts = products.length;
+  const okCount = products.filter(p=>{
+    let allOk=true; for(let i=0;i<5;i++){if(ls(p.id,i)>0&&ls(p.id,i)<=p.thresh)allOk=false;if(ls(p.id,i)===0)allOk=false;} return allOk;
+  }).length;
+
+  mc.innerHTML=`
+  <div class="stats-grid" style="margin-bottom:20px">
+    <div class="stat-card green"><div class="stat-label">Items healthy</div><div class="stat-value green">${okCount}</div><div class="stat-sub">of ${totalProducts} products</div></div>
+    <div class="stat-card"><div class="stat-label">Usage events</div><div class="stat-value">${usageLog.length}</div><div class="stat-sub">total logged</div></div>
+    <div class="stat-card amber"><div class="stat-label">Reorder needed</div><div class="stat-value amber">${products.filter(p=>rqty(p)>0).length}</div><div class="stat-sub">this 30-day cycle</div></div>
+    <div class="stat-card purple"><div class="stat-label">30d consumed</div><div class="stat-value" style="color:var(--purple)">${products.reduce((s,p)=>s+u30(p.id),0)}</div><div class="stat-sub">total units</div></div>
+  </div>
+  <div class="analytics-grid">
+    <div class="chart-card">
+      <div class="chart-title">Top products by 30-day usage</div>
+      ${topUsed.length===0
+        ? '<div style="color:var(--text3);font-size:13px">No usage logged yet</div>'
+        : `<div class="bar-chart">${topUsed.map(({p,u})=>`
+          <div class="bar-row">
+            <div class="bar-label" title="${p.name}">${p.name}</div>
+            <div class="bar-track"><div class="bar-fill" style="width:${Math.round((u/maxU)*100)}%;background:var(--accent)"></div></div>
+            <div class="bar-val">${u}</div>
+          </div>`).join('')}</div>`}
+    </div>
+    <div class="chart-card">
+      <div class="chart-title">Usage by area (30 days)</div>
+      ${locUsage.every(x=>x.u===0)
+        ? '<div style="color:var(--text3);font-size:13px">No usage logged yet</div>'
+        : `<div class="bar-chart">${locUsage.map(({l,u,color})=>`
+          <div class="bar-row">
+            <div class="bar-label">${l}</div>
+            <div class="bar-track"><div class="bar-fill" style="width:${Math.round((u/maxLU)*100)}%;background:${color}"></div></div>
+            <div class="bar-val">${u}</div>
+          </div>`).join('')}</div>`}
+    </div>
+    <div class="chart-card">
+      <div class="chart-title">Usage by category (30 days)</div>
+      ${catList.length===0
+        ? '<div style="color:var(--text3);font-size:13px">No usage logged yet</div>'
+        : `<div class="bar-chart">${catList.map(([cat,u])=>{const c=CAT[cat]||CAT['Other'];return`
+          <div class="bar-row">
+            <div class="bar-label" title="${cat}">${cat}</div>
+            <div class="bar-track"><div class="bar-fill" style="width:${Math.round((u/maxCU)*100)}%;background:${c.color}"></div></div>
+            <div class="bar-val">${u}</div>
+          </div>`}).join('')}</div>`}
+    </div>
+    <div class="chart-card">
+      <div class="chart-title">Stock health by product</div>
+      <div class="bar-chart">${products.slice(0,8).map(p=>{
+        const t=ts(p.id), m=p.monthlyEst||1;
+        const pct=Math.min(100,Math.round((t/Math.max(m+p.thresh,1))*100));
+        const color=pct<25?'var(--red)':pct<60?'var(--amber)':'var(--green)';
+        return`<div class="bar-row">
+          <div class="bar-label" title="${p.name}">${p.name}</div>
+          <div class="bar-track"><div class="bar-fill" style="width:${pct}%;background:${color}"></div></div>
+          <div class="bar-val">${pct}%</div>
+        </div>`;}).join('')}
+      </div>
+    </div>
+  </div>`;
+}
+
+// ── Actions ─────────────────────────────────────────────────────
+function adj(pid, li, d) {
+  if(!stock[pid]) stock[pid]=[0,0,0,0,0];
+  const prev=stock[pid][li];
+  stock[pid][li]=Math.max(0,prev+d);
+  const p=products.find(p=>p.id===pid);
+  if(d<0&&stock[pid][li]<prev){
+    usageLog.push({pid,locIdx:li,qty:1,date:new Date().toISOString().slice(0,10)});
+    logAct(`Used 1 ${p.unit} of ${p.name} at ${LOCS[li]}`, 'amber');
+  } else {
+    logAct(`${d>0?'Added':'Removed'} 1 ${p.name} at ${LOCS[li]}`, d>0?'green':'');
+    save();
+  }
+  render();
+}
+
+function delItem(id) {
+  if(!confirm('Delete this product?')) return;
+  const p=products.find(p=>p.id===id);
+  products=products.filter(p=>p.id!==id);
+  delete stock[id];
+  logAct(`Deleted: ${p.name}`, 'red');
+  render();
+}
+
+function openAdd() {
+  editId=null;
+  document.getElementById('item-modal-title').textContent='Add supply item';
+  ['f-name','f-qty','f-thresh','f-supplier','f-notes','f-monthly'].forEach(id=>document.getElementById(id).value='');
+  document.getElementById('modal-item').classList.add('open');
+  setTimeout(()=>document.getElementById('f-name').focus(),120);
+}
+
+function editItem(id) {
+  editId=id;
+  const p=products.find(p=>p.id===id);
+  document.getElementById('item-modal-title').textContent='Edit item';
+  document.getElementById('f-name').value=p.name;
+  document.getElementById('f-cat').value=p.category;
+  document.getElementById('f-unit').value=p.unit;
+  document.getElementById('f-qty').value=ls(id,0);
+  document.getElementById('f-thresh').value=p.thresh;
+  document.getElementById('f-monthly').value=p.monthlyEst||'';
+  document.getElementById('f-supplier').value=p.supplier||'';
+  document.getElementById('f-notes').value=p.notes||'';
+  document.getElementById('modal-item').classList.add('open');
+}
+
+function saveItem() {
+  const name=document.getElementById('f-name').value.trim();
+  if(!name){document.getElementById('f-name').focus();return;}
+  const qty=parseInt(document.getElementById('f-qty').value)||0;
+  const data={name,category:document.getElementById('f-cat').value,unit:document.getElementById('f-unit').value,thresh:parseInt(document.getElementById('f-thresh').value)||5,monthlyEst:parseInt(document.getElementById('f-monthly').value)||0,supplier:document.getElementById('f-supplier').value.trim(),notes:document.getElementById('f-notes').value.trim()};
+  if(editId){Object.assign(products.find(p=>p.id===editId),data);stock[editId][0]=qty;logAct(`Updated: ${name}`);}
+  else{const id=nextId++;products.push({id,...data});stock[id]=[qty,0,0,0,0];logAct(`Added: ${name} (${qty} ${data.unit} to Connex)`,'green');}
+  closeModals();render();
+}
+
+function openTransfer() {
+  document.getElementById('t-prod').innerHTML=products.map(p=>`<option value="${p.id}">${p.name}</option>`).join('');
+  document.getElementById('t-from').innerHTML=LOCS.map((l,i)=>`<option value="${i}">${l}</option>`).join('');
+  document.getElementById('t-to').innerHTML=LOCS.map((l,i)=>`<option value="${i}"${i===1?' selected':''}>${l}</option>`).join('');
+  updateTMax();
+  document.getElementById('modal-transfer').classList.add('open');
+}
+
+function qTransfer(pid,toIdx) {
+  document.getElementById('t-prod').innerHTML=products.map(p=>`<option value="${p.id}"${p.id===pid?' selected':''}>${p.name}</option>`).join('');
+  document.getElementById('t-from').innerHTML=LOCS.map((l,i)=>`<option value="${i}"${i===0?' selected':''}>${l}</option>`).join('');
+  document.getElementById('t-to').innerHTML=LOCS.map((l,i)=>`<option value="${i}"${i===toIdx?' selected':''}>${l}</option>`).join('');
+  updateTMax();
+  document.getElementById('modal-transfer').classList.add('open');
+}
+
+function updateTMax() {
+  const pid=parseInt(document.getElementById('t-prod').value);
+  const fi=parseInt(document.getElementById('t-from').value);
+  const avail=ls(pid,fi);
+  document.getElementById('t-avail').textContent=`(${avail} available)`;
+  document.getElementById('t-qty').max=avail;
+}
+
+function doTransfer() {
+  const pid=parseInt(document.getElementById('t-prod').value);
+  const fi=parseInt(document.getElementById('t-from').value);
+  const ti=parseInt(document.getElementById('t-to').value);
+  const qty=parseInt(document.getElementById('t-qty').value)||0;
+  if(fi===ti){alert('From and To must be different.');return;}
+  const avail=ls(pid,fi);
+  if(qty<=0||qty>avail){alert(`Enter a quantity between 1 and ${avail}.`);return;}
+  stock[pid][fi]-=qty;stock[pid][ti]+=qty;
+  const p=products.find(p=>p.id===pid);
+  logAct(`Transferred ${qty} ${p.unit} of ${p.name}: ${LOCS[fi]} → ${LOCS[ti]}`,'green');
+  closeModals();render();
+}
+
+function openLogUsage() {
+  document.getElementById('u-prod').innerHTML=products.map(p=>`<option value="${p.id}">${p.name}</option>`).join('');
+  document.getElementById('u-loc').innerHTML=LOCS.slice(1).map((l,i)=>`<option value="${i+1}">${l}</option>`).join('');
+  document.getElementById('u-qty').value='';
+  document.getElementById('u-note').value='';
+  document.getElementById('u-date').value=new Date().toISOString().slice(0,10);
+  document.getElementById('modal-usage').classList.add('open');
+}
+
+function saveUsage() {
+  const pid=parseInt(document.getElementById('u-prod').value);
+  const li=parseInt(document.getElementById('u-loc').value);
+  const qty=parseInt(document.getElementById('u-qty').value)||0;
+  const date=document.getElementById('u-date').value;
+  const note=document.getElementById('u-note').value.trim();
+  if(qty<=0){document.getElementById('u-qty').focus();return;}
+  usageLog.push({pid,locIdx:li,qty,date});
+  const p=products.find(p=>p.id===pid);
+  logAct(`Logged: ${qty} ${p.unit} of ${p.name} at ${LOCS[li]}${note?' — '+note:''}`, 'amber');
+  closeModals();render();
+}
+
+function closeModals(){document.querySelectorAll('.overlay').forEach(m=>m.classList.remove('open'));}
+document.querySelectorAll('.overlay').forEach(m=>m.addEventListener('click',e=>{if(e.target===m)closeModals();}));
+document.addEventListener('keydown',e=>{if(e.key==='Escape')closeModals();});
+
+render();
+</script>
+</body>
+</html>
